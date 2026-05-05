@@ -1,0 +1,16 @@
+services:
+  - type: cron
+    name: daily-email-automation
+    env: node
+    plan: free
+    # 6:00 PM IST = 12:30 PM UTC
+    schedule: "30 12 * * *"
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: EMAIL_USER
+        value: onlinepannipuri@gmail.com
+      - key: EMAIL_PASS
+        value: "vrkj brvl dica ghfg"
+      - key: RECEIVER_EMAIL
+        value: thamarair65@gmail.com
