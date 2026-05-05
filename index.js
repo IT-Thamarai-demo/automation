@@ -1,14 +1,18 @@
 require('dotenv').config();
+const express = require('express');
 const nodemailer = require('nodemailer');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 const EMAIL_USER     = process.env.EMAIL_USER     || 'onlinepannipuri@gmail.com';
 const EMAIL_PASS     = process.env.EMAIL_PASS     || 'vrkj brvl dica ghfg';
 const RECEIVER_EMAIL = process.env.RECEIVER_EMAIL || 'thamarair65@gmail.com';
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
+// ─── Email Function ───────────────────────────────────────────────────────────
 async function sendDailyEmail() {
-  console.log(`[${new Date().toISOString()}] Starting daily email automation...`);
+  console.log(`[${new Date().toISOString()}] Starting email process...`);
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -18,9 +22,8 @@ async function sendDailyEmail() {
     }
   });
 
-  // Verify SMTP connection before sending
   await transporter.verify();
-  console.log('✅ SMTP connection verified successfully.');
+  console.log('✅ SMTP verified.');
 
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-IN', {
@@ -36,35 +39,38 @@ async function sendDailyEmail() {
     to: RECEIVER_EMAIL,
     subject: `📬 Daily Notification — ${dateStr}`,
     html: `
-      <div style="font-family:Arial,sans-serif;max-width:500px;margin:auto;border:1px solid #eee;border-radius:8px;overflow:hidden;">
-        <div style="background:#4f46e5;padding:24px;text-align:center;">
-          <h1 style="color:#fff;margin:0;font-size:22px;">📬 Daily Email Notification</h1>
-        </div>
-        <div style="padding:24px;background:#f9f9f9;">
-          <p style="font-size:16px;color:#333;">Hello,</p>
-          <p style="font-size:15px;color:#555;">
-            This is your scheduled daily notification for <strong>${dateStr}</strong> at <strong>${timeStr} IST</strong>.
-          </p>
-          <p style="font-size:15px;color:#555;">
-            This email was sent automatically by your Render cron job.
-          </p>
-          <hr style="border:none;border-top:1px solid #ddd;margin:20px 0;"/>
-          <p style="font-size:12px;color:#999;text-align:center;">
-            Sent from: ${EMAIL_USER} &nbsp;|&nbsp; Automation running on Render
-          </p>
-        </div>
+      <div style="font-family:Arial,sans-serif;max-width:500px;margin:auto;border:1px solid #eee;border-radius:8px;padding:20px;background:#f9f9f9;">
+        <h2 style="color:#4f46e5;">📬 Daily Email Notification</h2>
+        <p>Hello, this is your scheduled notification for <b>${dateStr}</b> at <b>${timeStr} IST</b>.</p>
+        <p>Status: Automation Triggered Successfully ✅</p>
       </div>
     `
   };
 
   const info = await transporter.sendMail(mailOptions);
-  console.log(`✅ Email sent successfully! Message ID: ${info.messageId}`);
-  console.log(`   From: ${EMAIL_USER}`);
-  console.log(`   To:   ${RECEIVER_EMAIL}`);
+  return info;
 }
 
-// ─── Run ──────────────────────────────────────────────────────────────────────
-sendDailyEmail().catch((err) => {
-  console.error('❌ Failed to send email:', err.message);
-  process.exit(1);
+// ─── Routes ───────────────────────────────────────────────────────────────────
+
+// 1. Health check / Homepage
+app.get('/', (req, res) => {
+  res.send('✅ Automation Server is Running. Use /trigger to send email.');
+});
+
+// 2. Trigger endpoint (Link this to cron-job.org or UptimeRobot)
+app.get('/trigger', async (req, res) => {
+  try {
+    const info = await sendDailyEmail();
+    console.log(`✅ Email sent: ${info.messageId}`);
+    res.status(200).json({ success: true, messageId: info.messageId });
+  } catch (err) {
+    console.error('❌ Failed:', err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ─── Start Server ─────────────────────────────────────────────────────────────
+app.listen(PORT, () => {
+  console.log(`🚀 Server listening on port ${PORT}`);
 });

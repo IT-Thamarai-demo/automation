@@ -1,14 +1,14 @@
 {
   "name": "daily-email-automation",
   "version": "1.0.0",
-  "description": "Daily 6PM email automation using Node.js + Nodemailer",
+  "description": "Daily 6PM email automation using Node.js + Express (Free Tier Compatible)",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "node index.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
+    "express": "^4.19.2",
     "nodemailer": "^6.9.13"
   }
 }

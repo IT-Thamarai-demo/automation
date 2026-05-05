@@ -1,10 +1,8 @@
 services:
-  - type: cron
+  - type: web
     name: daily-email-automation
     env: node
     plan: free
-    # 6:00 PM IST = 12:30 PM UTC
-    schedule: "30 12 * * *"
     buildCommand: npm install
     startCommand: node index.js
     envVars:
