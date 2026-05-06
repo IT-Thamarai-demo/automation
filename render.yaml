@@ -1,14 +1,22 @@
 services:
-  - type: web
+  - type: worker
     name: daily-email-automation
-    env: node
-    plan: free
+    runtime: node
+    plan: starter
     buildCommand: npm install
-    startCommand: node index.js
+    startCommand: npm start
     envVars:
       - key: EMAIL_USER
-        value: onlinepannipuri@gmail.com
+        sync: false
       - key: EMAIL_PASS
-        value: "vrkj brvl dica ghfg"
+        sync: false
       - key: RECEIVER_EMAIL
-        value: thamarair65@gmail.com
+        sync: false
+      - key: CRON_SCHEDULE
+        value: 0 18 * * *
+      - key: TIMEZONE
+        value: Asia/Kolkata
+      - key: USE_QUOTES_API
+        value: false
+      - key: SEND_ON_STARTUP
+        value: false
