@@ -172,6 +172,43 @@ If the API fails, the app automatically falls back to a local message.
 
 This app uses `node-cron`, so it must run as a long-running process. A background worker is better than a sleeping web service.
 
+## Free Deployment Option: GitHub Actions
+
+Render background workers are not free. If you need a free option, use GitHub Actions instead. It runs the email script once per day, so no server needs to stay online.
+
+The included workflow file is:
+
+```text
+.github/workflows/daily-email.yml
+```
+
+It runs every day at:
+
+```text
+12:30 PM UTC = 6:00 PM Asia/Kolkata
+```
+
+### GitHub Actions Setup
+
+1. Push this repository to GitHub.
+2. Open your GitHub repository.
+3. Go to Settings > Secrets and variables > Actions.
+4. Add these Repository secrets:
+   - `EMAIL_USER`
+   - `EMAIL_PASS`
+   - `RECEIVER_EMAIL`
+5. Optional: add this Repository variable:
+   - `USE_QUOTES_API=false`
+6. Go to the Actions tab.
+7. Open the Daily Email workflow.
+8. Click Run workflow to test it immediately.
+
+For multiple receivers, set the `RECEIVER_EMAIL` secret like this:
+
+```text
+person1@example.com,person2@example.com
+```
+
 ### Render
 
 1. Push this project to GitHub.

@@ -1,0 +1,32 @@
+name: Daily Email
+
+on:
+  schedule:
+    # Runs every day at 12:30 UTC, which is 6:00 PM in Asia/Kolkata.
+    - cron: '30 12 * * *'
+  workflow_dispatch:
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Send daily email
+        run: npm run send:now
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
+          USE_QUOTES_API: ${{ vars.USE_QUOTES_API || 'false' }}
